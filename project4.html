@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<h1>
+    World Cup Countries Graph
+</h1>
+
+<!-- Add 2 buttons -->
+<h2>
+    Host Count
+</h2>
+<p>
+    Click the button to see how many times a country has hosted the World Cup.
+</p>
+<button onclick="update('Host Country')">Host Country</button>
+
+<h2>
+    Position Count
+</h2>
+<p>
+    Click the buttons to see how many times a country has placed in that position in the World Cup.
+</p>
+<button onclick="update('Winners')">Winners</button>
+<button onclick="update('Runners-Up')">Runners-Up</button>
+<button onclick="update('Third')">Third</button>
+<button onclick="update('Fourth')">Fourth</button>
+
+<!-- Create a div where the graph will take place -->
+
+<div id="my_dataviz"></div>
+
+<h1>
+    World Cup Year Graph
+</h1>
+<p>
+    Click the buttons to see which years have the most goals scores compare to the number of teams and matches played.
+</p>
+
+<button onclick="update2('Goals Scored')">Goals Scored</button>
+<button onclick="update2('Qualified Teams')">Qualified Teams</button>
+<button onclick="update2('Matches Played')">Matches Played</button>
+
+<div id="my_dataviz2"></div>
+<script>
+
+
+
+
+    // A function that create / update the plot for a given variable:
+    function update2(selectedVar) {
+        var element = document.getElementById("my_dataviz2")
+        while (element.firstChild) {
+            element.removeChild(element.firstChild)
+        }
+        var tooltip = d3.select("#my_dataviz2")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("position", "relative")
+            .style("width", "fit-content")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "1px")
+            .style("border-radius", "5px")
+            .style("padding", "10px");
+        function mouseover() {
+            tooltip.style("opacity", 1)
+        }
+        function mousemove(d,...e) {
+            console.log(d,e)
+            tooltip.html("Count: "+d[selectedVar])
+            .style("left", (d3.mouse(this)[0])+"px")
+            .style("top", (d3.mouse(this)[1])+"px")
+        }
+        function mouseleave() {
+            tooltip.style("opacity", 0)
+        }
+        // set the dimensions and margins of the graph
+        var margin2 = { top: 30, right: 30, bottom: 70, left: 60 },
+            width2 = 1100 - margin2.left - margin2.right,
+            height2 = 400 - margin2.top - margin2.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#my_dataviz2")
+            .append("svg")
+            .attr("width", width2 + margin2.left + margin2.right)
+            .attr("height", height2 + margin2.top + margin2.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin2.left + "," + margin2.top + ")");
+
+        // Initialize the X axis
+        var x = d3.scaleBand()
+            .range([0, width2])
+            .padding(0.2);
+        var xAxis = svg.append("g")
+            .attr("transform", "translate(0," + height2 + ")")
+
+        // Initialize the Y axis
+        var y = d3.scaleLinear()
+            .range([height2, 0]);
+        var yAxis = svg.append("g")
+            .attr("class", "myYaxis")
+
+
+        // Parse the Data
+        d3.csv("./data/world_cups.csv", function (data) {
+            console.log(data)
+            // X axis
+            x.domain(data.map(function (d) { return d.Year; }))
+            xAxis.transition().duration(1000).call(d3.axisBottom(x))
+
+            // Add Y axis
+            y.domain([0, d3.max(data, function (d) { return +d[selectedVar] })]);
+            yAxis.transition().duration(1000).call(d3.axisLeft(y));
+
+            // variable u: map data to existing bars
+            var u = svg.selectAll("rect")
+                .data(data)
+
+            // update bars
+            u
+                .enter()
+                .append("rect")
+                .on("mouseover", mouseover)
+                .on("mousemove", mousemove)
+                .on("mouseleave", mouseleave)
+                .merge(u)
+                .transition()
+                .duration(1000)
+                .attr("x", function (d) { return x(d.Year); })
+                .attr("y", function (d) { return y(d[selectedVar]); })
+                .attr("width", x.bandwidth())
+                .attr("height", function (d) { return height2 - y(d[selectedVar]); })
+                .attr("fill", "#69b3a2")
+        })
+
+    }
+
+    // Initialize plot
+    update2('Goals Scored')
+
+</script>
+
+
+<script>
+
+
+
+    // A function that create / update the plot for a given variable:
+    function update(selectedVar) {
+        var element = document.getElementById("my_dataviz")
+        while (element.firstChild) {
+            element.removeChild(element.firstChild)
+        }
+        // set the dimensions and margins of the graph
+        var margin = { top: 30, right: 30, bottom: 70, left: 60 },
+            width = 1100 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#my_dataviz")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // Initialize the X axis
+        var x = d3.scaleBand()
+            .range([0, width])
+            .padding(0.2);
+        var xAxis = svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+
+        // Initialize the Y axis
+        var y = d3.scaleLinear()
+            .range([height, 0]);
+        var yAxis = svg.append("g")
+            .attr("class", "myYaxis")
+        // Parse the Data
+        d3.csv("./data/world_cups.csv", function (data) {
+            console.log(data)
+            countries = []
+            hostCountryCount = {}
+            winnerCountryCount = {}
+            runnersupCountryCount = {}
+            thirdCountryCount = {}
+            fourthCountryCount = {}
+
+            // Make data array for host country
+            let hostData = []
+            let winnersData = []
+            let runnersupData = []
+            let thirdData = []
+            let fourthData = []
+
+            for (let d of data) {
+                console.log(d)
+                if (d["Host Country"] in hostCountryCount) {
+                    hostCountryCount[d["Host Country"]] += 1
+                }
+                else {
+                    hostCountryCount[d["Host Country"]] = 1
+                }
+                if (d["Winner"] in winnerCountryCount) {
+                    winnerCountryCount[d["Winner"]] += 1
+                }
+                else {
+                    winnerCountryCount[d["Winner"]] = 1
+                }
+                if (d["Runners-Up"] in runnersupCountryCount) {
+                    runnersupCountryCount[d["Runners-Up"]] += 1
+                }
+                else {
+                    runnersupCountryCount[d["Runners-Up"]] = 1
+                }
+                if (d["Third"] in thirdCountryCount) {
+                    thirdCountryCount[d["Third"]] += 1
+                }
+                else {
+                    thirdCountryCount[d["Third"]] = 1
+                }
+                if (d["Fourth"] in fourthCountryCount) {
+                    fourthCountryCount[d["Fourth"]] += 1
+                }
+                else {
+                    fourthCountryCount[d["Fourth"]] = 1
+                }
+                if (!countries.includes(d["Host Country"])) {
+                    countries.push(d["Host Country"])
+                }
+                if (!countries.includes(d["Winner"])) {
+                    countries.push(d["Winner"])
+                }
+                if (!countries.includes(d["Runners-Up"])) {
+                    countries.push(d["Runners-Up"])
+                }
+                if (!countries.includes(d["Third"])) {
+                    countries.push(d["Third"])
+                }
+                if (!countries.includes(d["Fourth"])) {
+                    countries.push(d["Fourth"])
+                }
+            }
+
+            console.log(runnersupCountryCount)
+            // For each country in host country count add to host data the country in its count
+            for (let country in hostCountryCount) {
+                hostData.push({ country, count: hostCountryCount[country] })
+            }
+            for (let country in winnerCountryCount) {
+                winnersData.push({ country, count: winnerCountryCount[country] })
+            }
+            for (let country in runnersupCountryCount) {
+                runnersupData.push({ country, count: runnersupCountryCount[country] })
+            }
+            for (let country in thirdCountryCount) {
+                thirdData.push({ country, count: thirdCountryCount[country] })
+            }
+            for (let country in fourthCountryCount) {
+                fourthData.push({ country, count: fourthCountryCount[country] })
+            }
+
+            // Make an object to all of the data arrays
+            let myDict = { "Host Country": hostData, "Winners": winnersData, "Runners-Up": runnersupData, "Third": thirdData, "Fourth": fourthData }
+
+
+
+
+
+            numHost = []
+            numWinners = []
+            numRunnersup = []
+            numThird = []
+            numFourth = []
+            for (let country of countries) {
+                numHost.push(hostCountryCount[country])
+                numRunnersup.push(runnersupCountryCount[country])
+                numWinners.push(winnerCountryCount[country])
+                numThird.push(thirdCountryCount[country])
+                numFourth.push(fourthCountryCount[country])
+            }
+
+
+
+            let myData = []
+            for (let i = 0; i < countries.length; i++) {
+                let temp = { country: countries[i], host: numHost[i], winners: numWinners[i], runnersup: numRunnersup[i], third: numThird[i], fourth: numFourth[i] }
+                //add the rest of data to temp
+                myData.push(temp)
+            }
+            // console.log(type of (data["Host Country"])
+            // console.log(typeof data)
+            console.log(hostCountryCount)
+            console.log(hostData)
+            // X axis
+            //x.domain(countries.map(function(country) { return country; }))
+            x.domain(myDict[selectedVar].map(function (d) { return d.country; }))
+            xAxis.transition().duration(1000).call(d3.axisBottom(x))
+
+            // Add Y axis
+            //y.domain([0, d3.max(myDict[selectedVar], function(d) { return +d}) ]);
+            //y.domain([0, 5 ]);
+            y.domain([0, d3.max(myDict[selectedVar], function (d) { return +d["count"] })]);
+            yAxis.transition().duration(1000).call(d3.axisLeft(y));
+            // console.log(myData)
+            // variable u: map data to existing bars
+            var u = svg.selectAll("rect")
+                .data(myDict[selectedVar])
+
+
+            // update bars
+            u
+                .enter()
+                .append("rect")
+                .merge(u)
+                .transition()
+                .duration(1000)
+                .attr("x", function (d) { return x(d.country); })
+                .attr("y", function (d) { return y(d["count"]); })
+                .attr("width", x.bandwidth())
+                .attr("height", function (d) { return height - y(d["count"]); })
+                .attr("fill", "#69b3a2")
+        })
+
+    }
+
+    // Initialize plot
+    update('Host Country')
+
+</script>
