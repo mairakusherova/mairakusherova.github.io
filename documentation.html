@@ -1,46 +1,65 @@
 <DOCTYPE! html>
     <html>
         <head>
+            <title>
+                Documentation Page
+            </title>
             <meta charset="utf-8" />
             <style>
                 .image-border{
                     border: 2px solid dimgray;
                     margin-bottom: 20px;
-                    width: 700px;
+                    margin-left: auto;
+                    margin-right: auto;
+                    width: 1000px;
                     display: block;
+
+                }
+                h1{
+                    font-size: 35px;
+                    color: #b3697a;
                 }
                 p{
+                    font-style: italic;
                     font-size: 25px;
+                    margin-left: 300px;
+                    margin-right: 300px;
+                    color: dimgray;
                 }
                 h2{
                     font-size: 30px;
+                    color:#69b3a2;
                 }
-                nav li a{
+                nav a{
                     font-size: 25px;
+                }
+                div.a {
+                    text-align: center;
+                    font-size: 25px
+                }
+                form {
+                    display: inline;
                 }
             </style>
         </head>
         <body>
-            <nav>
-                <ul>
-                    <li>
-                        <a href="index.html">
-                        Visualization Page
-                        </a>
-                    </li>
-                    <li>
-                        <a href="documentation.html">
-                        Documentation Page
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+
+            <div class="a">
+                
+                
+                <form method="get" action="index.html"><button type="submit">Visualization Page</button></form>
+                <form method="get" action="https://www.kaggle.com/datasets/shilongzhuang/soccer-world-cup-challenge?resource=download&select=world_cups.csv"><button type="submit">Data Source</button></form>
+            
+        
             <section>
+                <h1>
+                    Documentation
+                </h1>
                 <p>
-                    
-I was inspired to find a dataset related to the World Cup because I had been watching the games for 2022 World Cup and wanted to see what visualization I could create using World Cup data. I found the dataset on Kaggle and began exploring ways to display the data. I was able to make the charts displaying the winners of the World Cup since 1930. 
+                    I was inspired to find a dataset related to the World Cup because I had been watching the games for 2022 World Cup and wanted to see what visualization I could create using World Cup data. I found the dataset on Kaggle and began exploring ways to display the data. I was able to make the charts displaying the winners of the World Cup since 1930. 
 
                 </p>
+
                 <h2>
                     Design Process
                 </h2>
@@ -72,6 +91,7 @@ I was inspired to find a dataset related to the World Cup because I had been wat
                 <p>
                     I expected countries to have hosted the World Cup just one time, but to my surprise, there were five countries that hosted the World Cup more than once. It is interesting to see the history of countries in the dataset, for example, I noticed a country named “Germany FR” which appears to be the team playing before the fall of the Berlin Wall. I was conflicted if I should combine “Germany FR” with “Germany”, but I decided to leave it as the dataset had it. I also noticed a correlation between “Goals Scored”, “Qualified Teams”, and “Matches Played”, trending upwards over time.
                 </p>
+                
                 <img class="image-border" src="images/host_country.png">
                 <img class="image-border" src="images/winners.png">
                 <img class="image-border" src="images/goals_scored.png">
@@ -80,17 +100,14 @@ I was inspired to find a dataset related to the World Cup because I had been wat
                     Video Demonstration
                 </h2>
                 
-                <video width="320" height="240" controls>
+                <video width="1000" height="600" controls>
                     <source src="images/movie.mp4" type="video/mp4">
                   Your browser does not support the video tag.
                 </video>
 
-                <a href="https://www.kaggle.com/datasets/shilongzhuang/soccer-world-cup-challenge?resource=download&select=world_cups.csv">
-                    Link to Data Source
-                </a>
             </section>
 
-            
+            </div>
         </body>
     </html>
 
